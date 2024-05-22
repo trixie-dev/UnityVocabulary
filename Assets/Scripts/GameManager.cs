@@ -28,10 +28,10 @@ public class GameManager: MonoBehaviour
         menuManager.LoadMainMenu();
     }
 
-    public void StartSession(int topicIndex, bool isReverse)
+    public void StartSession(TopicModel topic, bool isReverse)
     {
         ChangeTab(sessionManager);
-        sessionManager.StartSession(topicIndex, isReverse);
+        sessionManager.StartSession(topic, isReverse);
     }
     
     private void ChangeTab(Tab tab)

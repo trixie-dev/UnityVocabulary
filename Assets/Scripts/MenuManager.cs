@@ -33,11 +33,23 @@ public class MenuManager : Tab
         ClearMenu();
         for(int i = 0; i < Storage.VocabularyTopics.Length; i++)
         {
-            int index = i;
-            MenuItem item = new MenuItem($"Topic {i + 1}", () =>
+            MenuItem item;
+            TopicModel topic = Storage.VocabularyTopics[i];
+            if (topic.IsCompleted)
             {
-                GameManager.Instance.StartSession(index, false);
-            });
+                item = new MenuItem($"<color=green>Topic {i + 1} Completed </color>", () =>
+                {
+                    GameManager.Instance.StartSession(topic, false);
+                });
+            }
+            else
+            {
+                item = new MenuItem($"Topic {i + 1}", () =>
+                {
+                    GameManager.Instance.StartSession(topic, false);
+                });
+            }
+            
             _menuItems.Add(item);
         }
         RenderMenu();

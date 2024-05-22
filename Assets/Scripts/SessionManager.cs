@@ -17,6 +17,7 @@ public class SessionManager : Tab
     
     private QuestionModel _currentQuestion;
     private List<QuestionModel> _previousQuestions = new List<QuestionModel>();
+    private TopicModel _currentTopic;
     
     private int _initialQuestionCount;
     
@@ -29,9 +30,10 @@ public class SessionManager : Tab
         $"Pr: {_correctAnswers}/{_initialQuestionCount}    At: {_attempts - 1}    Ac: {accuracy}%";
     
 
-    public void StartSession(int topicIndex, bool isReverse)
+    public void StartSession(TopicModel topic, bool isReverse)
     {
-        _questions = Storage.GetVocabularyWords(topicIndex);
+        _currentTopic = topic;
+        _questions = Storage.GetVocabularyWords(topic.Index);
         _initialQuestionCount = _questions.Count;
         if (isReverse)
         {
@@ -55,9 +57,7 @@ public class SessionManager : Tab
         
         if (_currentQuestion == null)
         {
-            QuestionText.text = "";
-            AnswerText.text = "Completed";
-            Invoke(nameof(MainMenu), 3);
+            FinishSession();
         }
         else
         {
@@ -65,10 +65,22 @@ public class SessionManager : Tab
             AnswerText.text = "";
         }
     }
+    
+    private void FinishSession()
+    {
+        QuestionText.text = "";
+        AnswerText.text = "Completed";
+        Invoke(nameof(MainMenu), 3);
+        CancelInvoke(nameof(UpdateTime));
+        SendStatistic();
+    }
 
     private void SendStatistic()
     {
-        
+        _currentTopic.IsCompleted = true;
+        _currentTopic.AttemptsToComplete = _attempts - 1;
+        _currentTopic.Accuracy = accuracy;
+        Storage.SaveTopicInfo(_currentTopic);
     }
 
     private void MainMenu()
