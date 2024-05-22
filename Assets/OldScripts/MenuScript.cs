@@ -35,7 +35,7 @@ public class MenuScript : MonoBehaviour
         toggleSwitch.SetActive(false);
         screenWidth = Screen.width;
         screenHeight = Screen.height;
-        string[] mainMenu = { "Main Menu"};
+        string[] mainMenu = { "Vocabulary"};
         Dictionary<string, bool> blocksDict = new Dictionary<string, bool>();
         foreach (string str in mainMenu)
         {
@@ -66,16 +66,9 @@ public class MenuScript : MonoBehaviour
             GameObject.Find("ClearProgress").SetActive(false);
             if (db.choices[0] == 0 && !isSpawned)
             {
-                string[] list = { "11", "22", "33", "44", "55", "66", "77" };
-                Dictionary<string, bool> blocksDict = new Dictionary<string, bool>();
-                foreach (string str in list)
-                {
-                    blocksDict[str] = false;
-                }
-                LoadMenu(blocksDict);
-                isSpawned = true;
-                isDone = true;
-                toggleSwitch.SetActive(true);
+                db.choices.Add(0);
+                isSelected = true;
+                choise = 0;
             }
             
 
@@ -86,7 +79,7 @@ public class MenuScript : MonoBehaviour
             if (db.choices[0] == 0 && db.choices[1] == 0 && !isSpawned)
             {
                 
-                string[] list = GeneretionBloks(db.d1);
+                string[] list = GeneretionBloks(db.QuestionModels.Length);
                 bool isAlready;
                 Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
                 for (int i = 0; i < list.Length; i++)
@@ -101,131 +94,6 @@ public class MenuScript : MonoBehaviour
                     bloksDict[list[i]] = isAlready;
                 }
                 LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-
-            }
-            else if(db.choices[0] == 0 && db.choices[1] == 1 && !isSpawned)
-            {   
-                // d2
-                string[] list = GeneretionBloks(db.d2);
-                bool isAlready;
-                Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
-                for (int i = 0; i < list.Length; i++)
-                {
-                    if (PlayerPrefs.HasKey(db.choices[1].ToString() + i.ToString()))
-                    {
-                        isAlready = true;
-                    }
-                    else
-                    {
-                        isAlready = false;
-                    }
-                    bloksDict[list[i]] = isAlready;
-                }
-                LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-            }
-            else if (db.choices[0] == 0 && db.choices[1] == 2 && !isSpawned)
-            {
-                // d3
-                string[] list = GeneretionBloks(db.d3);
-                bool isAlready;
-                Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
-                for (int i = 0; i < list.Length; i++)
-                {
-                    if (PlayerPrefs.HasKey(db.choices[1].ToString() + i.ToString()))
-                    {
-                        isAlready = true;
-                    }
-                    else
-                    {
-                        isAlready = false;
-                    }
-                    bloksDict[list[i]] = isAlready;
-                }
-                LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-
-            }
-            else if (db.choices[0] == 0 && db.choices[1] == 3 && !isSpawned)
-            {
-                // d4
-                string[] list = GeneretionBloks(db.d4);
-                bool isAlready;
-                Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
-                for (int i = 0; i < list.Length; i++)
-                {
-                    if (PlayerPrefs.HasKey(db.choices[1].ToString() + i.ToString()))
-                    {
-                        isAlready = true;
-                    }
-                    else
-                    {
-                        isAlready = false;
-                    }
-                    bloksDict[list[i]] = isAlready;
-                }
-                LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-
-            }
-            // 4
-            else if (db.choices[0] == 0 && db.choices[1] == 4 && !isSpawned)
-            {
-                // d4
-                string[] list = GeneretionBloks(db.d5);
-                bool isAlready;
-                Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
-                for (int i = 0; i < list.Length; i++)
-                {
-                    if (PlayerPrefs.HasKey(db.choices[1].ToString() + i.ToString()))
-                    {
-                        isAlready = true;
-                    }
-                    else
-                    {
-                        isAlready = false;
-                    }
-                    bloksDict[list[i]] = isAlready;
-                }
-                LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-
-            }
-            // 5
-            else if (db.choices[0] == 0 && db.choices[1] == 5 && !isSpawned)
-            {
-                // d4
-                string[] list = GeneretionBloks(db.d6);
-                bool isAlready;
-                Dictionary<string, bool> bloksDict = new Dictionary<string, bool>();
-                for (int i = 0; i < list.Length; i++)
-                {
-                    if (PlayerPrefs.HasKey(db.choices[1].ToString() + i.ToString()))
-                    {
-                        isAlready = true;
-                    }
-                    else
-                    {
-                        isAlready = false;
-                    }
-                    bloksDict[list[i]] = isAlready;
-                }
-                LoadMenu(bloksDict);
-                isSpawned = true;
-                isDone = true;
-
-            }
-            else if (db.choices[0] == 0 && db.choices[1] == 6 && !isSpawned)
-            {
-               
-                db.choices.Add(0);
-                isSelected = true;
                 isSpawned = true;
                 isDone = true;
 
@@ -284,10 +152,10 @@ public class MenuScript : MonoBehaviour
         }
     }
 
-    string[] GeneretionBloks(Dictionary<string, string> dict)
+    string[] GeneretionBloks(int count)
     {
         float number = numberOfWords;
-        int n = Mathf.CeilToInt(dict.Count / number);
+        int n = Mathf.CeilToInt(count / number);
         string[] list = new string[n];
         for (int i = 1; i <= list.Length; i++)
         {
