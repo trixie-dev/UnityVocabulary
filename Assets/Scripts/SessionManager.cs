@@ -33,23 +33,27 @@ public class SessionManager : Tab
 
     public void StartSession(TopicModel topic, bool fromEnglish)
     {
+        ClearFields();
         _isEnglishMode = fromEnglish;
         _currentTopic = topic;
         _questions = new List<QuestionModel>(Storage.GetVocabularyWords(topic.Index));
         _initialQuestionCount = _questions.Count;
-        if (!_isEnglishMode)
-        {
-            foreach (var question in _questions)
-            {
-                question.Swap();
-            }
-        }
         ShowButtonObj.SetActive(true);
         CorrectButtonObj.SetActive(false);
         WrongButtonObj.SetActive(false);
 
         ShowQuestion();
         InvokeRepeating(nameof(UpdateTime), 0, 1);
+    }
+    
+    private void ClearFields()
+    {
+        _questions.Clear();
+        _previousQuestions.Clear();
+        _currentQuestion = null;
+        _correctAnswers = 0;
+        _attempts = 1;
+        _timeInSeconds = 0;
     }
     
     public void ShowQuestion()
@@ -63,7 +67,7 @@ public class SessionManager : Tab
         }
         else
         {
-            QuestionText.text = _currentQuestion.Word;
+            QuestionText.text = _currentQuestion.GetWorld(_isEnglishMode);
             AnswerText.text = "";
         }
     }
@@ -72,9 +76,23 @@ public class SessionManager : Tab
     {
         QuestionText.text = "";
         AnswerText.text = "Completed";
-        Invoke(nameof(MainMenu), 3);
+        Invoke(nameof(MainMenu), 1);
         CancelInvoke(nameof(UpdateTime));
         SendStatistic();
+        ShowButtonObj.SetActive(false);
+        CorrectButtonObj.SetActive(false);
+        WrongButtonObj.SetActive(false);
+    }
+    
+    public void FinishSessionWithoutStatistic()
+    {
+        QuestionText.text = "";
+        AnswerText.text = "Finished";
+        Invoke(nameof(MainMenu), 1);
+        CancelInvoke(nameof(UpdateTime));
+        ShowButtonObj.SetActive(false);
+        CorrectButtonObj.SetActive(false);
+        WrongButtonObj.SetActive(false);
     }
 
     private void SendStatistic()
@@ -100,7 +118,7 @@ public class SessionManager : Tab
 
     public void ShowAnswer()
     {
-        AnswerText.text = _currentQuestion.Translation;
+        AnswerText.text = _currentQuestion.GetTranslation(_isEnglishMode);
         SwapControlButtons();
     }
     
@@ -157,8 +175,15 @@ public class SessionManager : Tab
     
     private void UpdateTime()
     {
-        TimeText.text = $"{_timeInSeconds / 60} : {_timeInSeconds % 60}";
+        TimeText.text = FormatTime();
         _timeInSeconds++;
         // format time
+    }
+    
+    private string FormatTime()
+    {
+        int minutes = _timeInSeconds / 60;
+        int seconds = _timeInSeconds % 60;
+        return $"{minutes:D2}:{seconds:D2}";
     }
 }

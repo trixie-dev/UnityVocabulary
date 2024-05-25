@@ -46,8 +46,8 @@ public class MenuManager : Tab
             string spoiler = "";
             for(int j = 0; j < 5 && j < questions.Count; j++)
             {
-                spoiler += $"{questions[j].Word}, ";
-                questions[j].Swap();
+                spoiler += $"{questions[j].GetWorld(_isEnglishMode)}, ";
+                
             }
             item = new MenuItem($"{i + 1}", spoiler,  accuracy, isCompleted, () =>
             {

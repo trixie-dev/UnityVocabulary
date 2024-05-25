@@ -12,4 +12,14 @@ public class QuestionModel
     {
         (Word, Translation) = (Translation, Word);
     }
+    
+    public string GetWorld(bool isEnglishMode)
+    {
+        return isEnglishMode ? Word : Translation;
+    }
+    
+    public string GetTranslation(bool isEnglishMode)
+    {
+        return isEnglishMode ? Translation : Word;
+    }
 }
