@@ -7,8 +7,10 @@ using TMPro;
 public class MenuManager : Tab
 {
     public GameObject MenuItemPrefab;
-    
     public Transform MenuContainer;
+    public Toggle ModeToggle;
+    
+    private bool _isEnglishMode => ModeToggle.isOn;
     
     
     private List<MenuItem> _menuItems = new List<MenuItem>();
@@ -16,15 +18,18 @@ public class MenuManager : Tab
     
     public void Initialize()
     {
-        LoadMainMenu();
+        ModeToggle.onValueChanged.AddListener((value) =>
+        {
+            LoadVocabularyMenu();
+        });
     }
 
 
     public void LoadMainMenu()
     {
         ClearMenu();
-        MenuItem item = new MenuItem("1 - Vocabulary", LoadVocabularyMenu);
-        _menuItems.Add(item);
+        //MenuItem item = new MenuItem("1 - Vocabulary", LoadVocabularyMenu);
+        //_menuItems.Add(item);
         RenderMenu();
     }
     
@@ -35,20 +40,20 @@ public class MenuManager : Tab
         {
             MenuItem item;
             TopicModel topic = Storage.VocabularyTopics[i];
-            if (topic.IsCompleted)
+            bool isCompleted = _isEnglishMode ? topic.IsCompletedFromEnglish : topic.IsCompletedFromNative;
+            int accuracy = _isEnglishMode ? topic.EnglishAccuracy : topic.NativeAccuracy;
+            List<QuestionModel> questions = new List<QuestionModel>(Storage.GetVocabularyWords(topic.Index));
+            string spoiler = "";
+            for(int j = 0; j < 5 && j < questions.Count; j++)
             {
-                item = new MenuItem($"<color=green>Topic {i + 1} Completed </color>", () =>
-                {
-                    GameManager.Instance.StartSession(topic, false);
-                });
+                spoiler += $"{questions[j].Word}, ";
+                questions[j].Swap();
             }
-            else
+            item = new MenuItem($"{i + 1}", spoiler,  accuracy, isCompleted, () =>
             {
-                item = new MenuItem($"Topic {i + 1}", () =>
-                {
-                    GameManager.Instance.StartSession(topic, false);
-                });
-            }
+                GameManager.Instance.StartSession(topic, _isEnglishMode);
+            });
+            
             
             _menuItems.Add(item);
         }
@@ -60,10 +65,7 @@ public class MenuManager : Tab
         foreach (var menuItem in _menuItems)
         {
             GameObject menuItemInstance = Instantiate(MenuItemPrefab, MenuContainer);
-            menuItemInstance.GetComponentInChildren<TextMeshProUGUI>().text = menuItem.Name;
-            Button btn = menuItemInstance.GetComponent<Button>();
-            btn.onClick.AddListener(() => { menuItem.Action(); });
-            menuItem.SetInstance(menuItemInstance);
+            menuItem.SetMenuObject(menuItemInstance.GetComponent<MenuItemObject>());
         }
     }
     
@@ -72,7 +74,7 @@ public class MenuManager : Tab
         // clear menu items
         foreach (var menuItem in _menuItems)
         {
-            Destroy(menuItem.Instance);
+            Destroy(menuItem.MenuObject.gameObject);
         }
         _menuItems.Clear();
     }
@@ -82,18 +84,38 @@ public class MenuManager : Tab
 
 public class MenuItem
 {
-    public string Name { get; set; }
+    private string Title;
+    private string SpoilerText;
+    private int Stat;
+    private bool IsCompleted;
     public Action Action { get; set; }
-    public GameObject Instance { get; set; }
+    public MenuItemObject MenuObject { get; set; }
     
-    public MenuItem(string name, Action action)
+    public MenuItem(string title, string spoilerText, int stat, bool isCompleted, Action action)
     {
-        Name = name;
+        Title = title;
+        SpoilerText = spoilerText;
+        Stat = stat;
+        IsCompleted = isCompleted;
         Action = action;
     }
-    
-    public void SetInstance(GameObject instance)
+
+    private void Init()
     {
-        Instance = instance;
+        Color gray = new Color(0.5f, 0.5f, 0.5f);
+        MenuObject.Title.color = IsCompleted ? Color.green : gray;
+        MenuObject.Title.text = Title;
+        MenuObject.SpoilerText.color = IsCompleted ? Color.green : gray;
+        MenuObject.SpoilerText.text = SpoilerText;
+        MenuObject.StatText.color = IsCompleted ? Color.green : gray;
+        MenuObject.StatText.text = $"Accuracy: {Stat}%";
+        MenuObject.Border.color = IsCompleted ? Color.green : new Color(0.5f, 0.5f, 0.5f);
+        MenuObject.Button.onClick.AddListener(() => { Action(); });
+    }
+    
+    public void SetMenuObject(MenuItemObject menuObject)
+    {
+        MenuObject = menuObject;
+        Init();
     }
 }

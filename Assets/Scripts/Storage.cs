@@ -34,7 +34,7 @@ public static class Storage
         
         for (int i = 0; i < topicsCount; i++)
         {
-            VocabularyTopics[i] = new TopicModel(0, i, 0, 0, false);
+            VocabularyTopics[i] = new TopicModel(0, i, 0, 0, 0, false, false);
         }
         _vocabularyTopicSaves = JsonConvert.DeserializeObject<List<TopicModel>>(PlayerPrefs.GetString("SaveData"));
         if (_vocabularyTopicSaves == null) _vocabularyTopicSaves = new List<TopicModel>();

@@ -7,7 +7,7 @@ public class Tab : MonoBehaviour
     public GameObject MainTabObject;
     protected List<GameObject> tabsObjects = new List<GameObject>();
     
-    public void ShowAll()
+    public virtual void ShowAll()
     {
         foreach (var viewObject in tabsObjects)
         {
@@ -17,7 +17,7 @@ public class Tab : MonoBehaviour
         MainTabObject.SetActive(true);
     }
     
-    public void HideAll()
+    public virtual void HideAll()
     {
         MainTabObject.SetActive(false);
         

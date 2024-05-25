@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565905733252",
+    "project_id": "unityvocabulary",
+    "storage_bucket": "unityvocabulary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565905733252:android:b75d53d17afba52c9d34d1",
+        "android_client_info": {
+          "package_name": "com.trixiedev.Tinex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2XvZyt2ggBvkZMSSJLs5aDgl_CgaWb5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

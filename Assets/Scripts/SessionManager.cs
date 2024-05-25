@@ -18,7 +18,8 @@ public class SessionManager : Tab
     private QuestionModel _currentQuestion;
     private List<QuestionModel> _previousQuestions = new List<QuestionModel>();
     private TopicModel _currentTopic;
-    
+
+    private bool _isEnglishMode = true;
     private int _initialQuestionCount;
     
     private int _correctAnswers;
@@ -30,12 +31,13 @@ public class SessionManager : Tab
         $"Pr: {_correctAnswers}/{_initialQuestionCount}    At: {_attempts - 1}    Ac: {accuracy}%";
     
 
-    public void StartSession(TopicModel topic, bool isReverse)
+    public void StartSession(TopicModel topic, bool fromEnglish)
     {
+        _isEnglishMode = fromEnglish;
         _currentTopic = topic;
-        _questions = Storage.GetVocabularyWords(topic.Index);
+        _questions = new List<QuestionModel>(Storage.GetVocabularyWords(topic.Index));
         _initialQuestionCount = _questions.Count;
-        if (isReverse)
+        if (!_isEnglishMode)
         {
             foreach (var question in _questions)
             {
@@ -77,9 +79,17 @@ public class SessionManager : Tab
 
     private void SendStatistic()
     {
-        _currentTopic.IsCompleted = true;
+        if (_isEnglishMode)
+        {
+            _currentTopic.EnglishAccuracy = accuracy;
+            _currentTopic.IsCompletedFromEnglish = true;
+        }
+        else
+        {
+            _currentTopic.NativeAccuracy = accuracy;
+            _currentTopic.IsCompletedFromNative = true;
+        }
         _currentTopic.AttemptsToComplete = _attempts - 1;
-        _currentTopic.Accuracy = accuracy;
         Storage.SaveTopicInfo(_currentTopic);
     }
 
